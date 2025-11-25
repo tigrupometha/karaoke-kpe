@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎤 Karaokê KPE - Confra 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kpe-yellow: #FFD100;
+            --kpe-yellow-dark: #E6BC00;
+            --kpe-purple: #702F8A;
+            --kpe-purple-light: #8B4CA8;
+            --kpe-purple-dark: #5A2670;
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, var(--kpe-purple-dark) 50%, #0f0f23 100%);
+            min-height: 100vh;
+        }
+        
+        .kpe-gradient {
+            background: linear-gradient(135deg, var(--kpe-purple) 0%, var(--kpe-purple-dark) 100%);
+        }
+        
+        .neon-text-yellow {
+            text-shadow: 0 0 10px var(--kpe-yellow), 0 0 20px var(--kpe-yellow), 0 0 30px var(--kpe-yellow);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 5px var(--kpe-yellow), 0 0 10px var(--kpe-yellow), 0 0 20px rgba(255, 209, 0, 0.3), inset 0 0 5px rgba(255, 209, 0, 0.1);
+            border: 2px solid var(--kpe-yellow);
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 0 15px rgba(255, 209, 0, 0.5), 0 0 30px rgba(112, 47, 138, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .search-glow:focus {
+            box-shadow: 0 0 10px var(--kpe-yellow), 0 0 20px var(--kpe-yellow);
+            border-color: var(--kpe-yellow);
+        }
+        
+        .btn-yellow {
+            background: linear-gradient(45deg, var(--kpe-yellow), var(--kpe-yellow-dark));
+            color: var(--kpe-purple-dark);
+            font-weight: 600;
+        }
+        
+        .btn-yellow:hover {
+            box-shadow: 0 0 20px var(--kpe-yellow);
+            transform: scale(1.05);
+        }
+        
+        .btn-purple {
+            background: linear-gradient(45deg, var(--kpe-purple), var(--kpe-purple-light));
+        }
+        
+        .btn-purple:hover {
+            box-shadow: 0 0 20px var(--kpe-purple);
+        }
+        
+        .btn-add-queue {
+            background: linear-gradient(45deg, #10b981, #059669);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-queue:hover {
+            box-shadow: 0 0 15px #10b981;
+            transform: scale(1.1);
+        }
+        
+        .microphone {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .music-note {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.3;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .playlist-item {
+            transition: all 0.3s ease;
+        }
+        
+        .playlist-item:hover {
+            background: linear-gradient(90deg, rgba(112, 47, 138, 0.3), rgba(255, 209, 0, 0.2));
+        }
+        
+        .playlist-item.now-playing {
+            background: linear-gradient(90deg, rgba(255, 209, 0, 0.3), rgba(112, 47, 138, 0.2));
+            border-left: 3px solid var(--kpe-yellow);
+        }
+        
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--kpe-yellow);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(112, 47, 138, 0.3), rgba(255, 209, 0, 0.1));
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--kpe-purple), var(--kpe-yellow));
+            border-radius: 4px;
+        }
+        
+        .result-card {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .result-card:hover {
+            background: linear-gradient(90deg, rgba(112, 47, 138, 0.3), rgba(255, 209, 0, 0.2));
+            transform: scale(1.02);
+            border-left-color: var(--kpe-yellow);
+        }
+        
+        .thumbnail-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(112, 47, 138, 0.6);
+            opacity: 0;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        
+        .result-card:hover .thumbnail-play {
+            opacity: 1;
+        }
+        
+        .kpe-logo {
+            filter: brightness(0) invert(1);
+            height: 50px;
+        }
+        
+        .tag-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .tag-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 209, 0, 0.5);
+        }
+        
+        .header-banner {
+            background: linear-gradient(90deg, var(--kpe-purple), var(--kpe-purple-dark), var(--kpe-purple));
+            border-bottom: 3px solid var(--kpe-yellow);
+        }
+        
+        .party-badge {
+            background: var(--kpe-yellow);
+            color: var(--kpe-purple-dark);
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+        
+        .next-indicator {
+            animation: pulse 1.5s infinite;
+        }
+        
+        .mode-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .mode-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 30px var(--kpe-yellow);
+        }
+        
+        .room-code {
+            font-family: monospace;
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            background: var(--kpe-yellow);
+            color: var(--kpe-purple-dark);
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: bold;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .connected {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .connected .status-dot {
+            background: #10b981;
+        }
+        
+        .disconnected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .disconnected .status-dot {
+            background: #ef4444;
+        }
+        
+        .waiting {
+            background: rgba(255, 209, 0, 0.2);
+            color: var(--kpe-yellow);
+        }
+        
+        .waiting .status-dot {
+            background: var(--kpe-yellow);
+        }
+        
+        .remote-badge {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Remote Mode Layout Fixes */
+        .remote-mode #mainApp {
+            max-width: 100%;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .remote-mode .max-w-3xl {
+            max-width: 100%;
+        }
+        
+        .remote-mode #resultsColumn {
+            width: 100%;
+        }
+        
+        .remote-mode #searchResults {
+            max-height: 45vh;
+        }
+        
+        .remote-mode #remoteQueueView {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            border-radius: 1.5rem 1.5rem 0 0;
+            max-height: 35vh;
+            z-index: 40;
+            background: rgba(17, 17, 34, 0.98);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .remote-mode #remotePlaylist {
+            max-height: 25vh;
+            overflow-y: auto;
+        }
+        
+        .remote-mode footer {
+            display: none;
+        }
+        
+        .remote-mode .result-card {
+            padding: 0.5rem;
+        }
+        
+        .remote-mode .result-card img {
+            width: 80px;
+            height: 50px;
+        }
+        
+        .remote-mode .result-card h4 {
+            font-size: 0.75rem;
+        }
+        
+        .remote-mode .btn-add-queue {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+        
+        .remote-mode .tag-btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .remote-mode #searchInput {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .remote-mode .header-banner {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        
+        .remote-mode .kpe-logo {
+            height: 35px;
+        }
+        
+        .queue-toggle-btn {
+            display: none;
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 45;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(255, 209, 0, 0.4);
+        }
+        
+        .remote-mode .queue-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remote-mode #remoteQueueView.collapsed {
+            transform: translateY(calc(100% - 50px));
+        }
+        
+        .remote-mode #remoteQueueView .queue-header {
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .queue-expand-icon {
+            transition: transform 0.3s;
+        }
+        
+        .remote-mode #remoteQueueView.collapsed .queue-expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* Padding bottom for remote mode to account for fixed queue */
+        .remote-mode .main-content-area {
+            padding-bottom: 40vh;
+        }
+        
+        /* QR Code Styles */
+        .qr-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            display: inline-block;
+        }
+        
+        .qr-container canvas {
+            display: block;
+        }
+        
+        .host-info-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .host-info-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        
+        .scan-instruction {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Search icon adjustment for mobile */
+        @media (max-width: 640px) {
+            .search-icon-mobile {
+                display: none;
+            }
+        }
+        
+        /* Load more button */
+        .btn-load-more {
+            background: linear-gradient(45deg, var(--kpe-purple-light), var(--kpe-purple));
+            transition: all 0.3s ease;
+        }
+        
+        .btn-load-more:hover {
+            box-shadow: 0 0 15px var(--kpe-purple);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="text-white overflow-x-hidden">
+    <!-- Decorative Music Notes -->
+    <div class="music-note" style="top: 10%; left: 5%; color: var(--kpe-yellow);">🎵</div>
+    <div class="music-note" style="top: 20%; right: 10%; animation-delay: 1s; color: var(--kpe-yellow);">🎶</div>
+    <div class="music-note" style="top: 60%; left: 8%; animation-delay: 2s; color: var(--kpe-yellow);">🎵</div>
+    <div class="music-note" style="top: 80%; right: 5%; animation-delay: 0.5s; color: var(--kpe-yellow);">🎶</div>
+    
+    <!-- Header Banner -->
+    <header class="header-banner py-4 mb-6">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="https://kpe.com.br/wp-content/themes/KpeEngenharia/assets/images/Logo-KPE.svg" 
+                         alt="KPE Engenharia" 
+                         class="kpe-logo">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold" style="color: var(--kpe-yellow);">
+                            🎤 Karaokê KPE
+                        </h1>
+                        <p class="text-xs text-purple-200 hidden md:block">Engenharia</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="connectionStatus" class="connection-status hidden">
+                        <span class="status-dot"></span>
+                        <span id="statusText">Desconectado</span>
+                    </div>
+                    <div class="party-badge px-4 py-2 rounded-full text-sm md:text-base">
+                        🎉 CONFRA 2025 🎉
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Mode Selection Screen -->
+    <div id="modeSelection" class="container mx-auto px-4 pb-8 max-w-4xl relative z-10">
+        <div class="text-center mb-8">
+            <div class="floating inline-block mb-4">
+                <span class="text-6xl">🎤</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-2">
+                <span style="color: var(--kpe-yellow);">Bem-vindo ao Karaokê!</span>
+            </h2>
+            <p class="text-purple-200 text-lg">Escolha como você quer participar:</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <!-- Host Mode -->
+            <div onclick="selectMode('host')" class="mode-card bg-gray-900/60 rounded-3xl p-8 neon-border text-center">
+                <div class="text-6xl mb-4">💻</div>
+                <h3 class="text-2xl font-bold mb-2" style="color: var(--kpe-yellow);">PALCO</h3>
+                <p class="text-purple-200 mb-4">Modo para o notebook/TV principal que vai tocar as músicas</p>
+                <ul class="text-left text-sm text-purple-300 space-y-2 mb-4">
+                    <li>✅ Reproduz os vídeos</li>
+                    <li>✅ Gera código da sala</li>
+                    <li>✅ Controla a fila</li>
+                    <li>✅ Pode pesquisar músicas</li>
+                </ul>
+                <button class="btn-yellow px-6 py-3 rounded-full w-full font-bold">
+                    Entrar como Palco
+                </button>
+            </div>
+            
+            <!-- Remote Mode -->
+            <div onclick="selectMode('remote')" class="mode-card bg-gray-900/60 rounded-3xl p-8 neon-border text-center">
+                <div class="text-6xl mb-4">📱</div>
+                <h3 class="text-2xl font-bold mb-2" style="color: var(--kpe-yellow);">CONTROLE</h3>
+                <p class="text-purple-200 mb-4">Modo para celulares adicionarem músicas à fila</p>
+                <ul class="text-left text-sm text-purple-300 space-y-2 mb-4">
+                    <li>✅ Pesquisa músicas</li>
+                    <li>✅ Adiciona à fila</li>
+                    <li>✅ Vê a fila em tempo real</li>
+                    <li>✅ Múltiplos controles</li>
+                </ul>
+                <button class="btn-purple px-6 py-3 rounded-full w-full font-bold text-white">
+                    Entrar como Controle
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Room Code Entry (for Remote) -->
+    <div id="roomEntry" class="container mx-auto px-4 pb-8 max-w-lg relative z-10 hidden">
+        <div class="text-center mb-8">
+            <div class="floating inline-block mb-4">
+                <span class="text-6xl">📱</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-2" style="color: var(--kpe-yellow);">Conectar ao Palco</h2>
+            <p class="text-purple-200">Digite o código exibido na tela principal:</p>
+        </div>
+        
+        <div class="bg-gray-900/60 rounded-3xl p-8 neon-border">
+            <input type="text" id="roomCodeInput" 
+                   placeholder="CÓDIGO" 
+                   maxlength="6"
+                   class="w-full text-center text-3xl font-mono font-bold tracking-widest py-4 px-6 rounded-xl bg-gray-800 border-2 focus:outline-none search-glow uppercase"
+                   style="border-color: var(--kpe-purple);"
+                   oninput="this.value = this.value.toUpperCase()">
+            
+            <button onclick="connectToRoom()" class="btn-yellow w-full py-4 rounded-full mt-6 font-bold text-lg">
+                🔗 Conectar
+            </button>
+            
+            <button onclick="backToModeSelection()" class="w-full py-3 text-purple-300 hover:text-white mt-4 transition-all">
+                ← Voltar
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main App -->
+    <div id="mainApp" class="container mx-auto px-4 pb-8 max-w-7xl relative z-10 hidden">
+        <!-- Host Room Code Display -->
+        <div id="hostRoomInfo" class="mb-6 hidden">
+            <div class="bg-gray-900/60 rounded-2xl p-6 neon-border max-w-md mx-auto text-center">
+                <p class="text-purple-200 mb-3">📱 Código da Sala:</p>
+                <div class="room-code" id="displayRoomCode">----</div>
+                <p class="text-sm text-purple-300 mt-4" id="connectedCount">0 controles conectados</p>
+                <p class="text-xs text-purple-400 mt-2">Digite este código no celular para conectar</p>
+            </div>
+        </div>
+        
+        <!-- Remote Mode Header -->
+        <div id="remoteHeader" class="text-center mb-6 hidden">
+            <div class="inline-flex items-center gap-3 bg-gray-900/60 rounded-full px-6 py-3 neon-border">
+                <span class="remote-badge">CONTROLE REMOTO</span>
+                <span class="text-purple-200">Conectado ao palco</span>
+            </div>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="max-w-3xl mx-auto mb-8">
+            <div class="flex gap-3">
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Digite o nome da música ou artista..."
+                        class="w-full px-6 py-4 bg-gray-900/80 border-2 rounded-full text-white placeholder-gray-400 focus:outline-none search-glow transition-all duration-300"
+                        style="border-color: var(--kpe-purple); padding-right: 3rem;"
+                        onkeypress="if(event.key === 'Enter') searchVideos()"
+                    >
+                    <span class="search-icon-mobile absolute right-4 top-1/2 -translate-y-1/2 text-2xl pointer-events-none">🔍</span>
+                </div>
+                <button 
+                    onclick="searchVideos()" 
+                    class="btn-yellow px-8 py-4 rounded-full transition-all"
+                >
+                    Buscar
+                </button>
+            </div>
+            
+            <!-- Quick Tags -->
+            <div class="flex flex-wrap gap-2 mt-4 justify-center">
+                <button onclick="quickSearch('karaoke pop hits')" class="tag-btn px-4 py-2 rounded-full text-sm" style="background: rgba(112, 47, 138, 0.5);">🎵 Pop</button>
+                <button onclick="quickSearch('karaoke rock classico')" class="tag-btn px-4 py-2 rounded-full text-sm" style="background: rgba(112, 47, 138, 0.5);">🎸 Rock</button>
+                <button onclick="quickSearch('karaoke sertanejo')" class="tag-btn px-4 py-2 rounded-full text-sm" style="background: rgba(112, 47, 138, 0.5);">🤠 Sertanejo</button>
+                <button onclick="quickSearch('karaoke mpb brasileiro')" class="tag-btn px-4 py-2 rounded-full text-sm" style="background: rgba(112, 47, 138, 0.5);">🇧🇷 MPB</button>
+                <button onclick="quickSearch('karaoke funk brasileiro')" class="tag-btn px-4 py-2 rounded-full text-sm" style="background: rgba(112, 47, 138, 0.5);">🎉 Funk</button>
+                <button onclick="quickSearch('karaoke internacional ingles')" class="tag-btn px-4 py-2 rounded-full text-sm" style="background: rgba(112, 47, 138, 0.5);">🌍 Internacional</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="grid lg:grid-cols-5 gap-6">
+            <!-- Video Player Column (Host Only) -->
+            <div id="playerColumn" class="lg:col-span-3">
+                <div class="bg-gray-900/60 rounded-3xl p-4 neon-border sticky top-4">
+                    <div id="playerContainer" class="video-container rounded-2xl overflow-hidden">
+                        <div class="video-placeholder">
+                            <img src="https://kpe.com.br/wp-content/themes/KpeEngenharia/assets/images/Logo-KPE.svg" 
+                                 alt="KPE" class="h-16 mb-4 opacity-50">
+                            <span class="text-6xl mb-4 microphone">🎤</span>
+                            <h3 class="text-xl font-bold mb-2" style="color: var(--kpe-yellow);">Pronto para cantar?</h3>
+                            <p class="text-purple-200">Pesquise uma música para começar!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Now Playing Info -->
+                    <div id="nowPlaying" class="mt-4 hidden">
+                        <div class="flex items-center gap-4 p-4 rounded-xl" style="background: linear-gradient(90deg, rgba(112, 47, 138, 0.5), rgba(255, 209, 0, 0.2));">
+                            <div class="w-14 h-14 rounded-lg flex items-center justify-center text-2xl flex-shrink-0" style="background: var(--kpe-purple);">
+                                🎵
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm" style="color: var(--kpe-yellow);">Tocando agora</p>
+                                <h4 id="currentTitle" class="font-semibold truncate">-</h4>
+                            </div>
+                            <button onclick="skipToNext()" class="p-3 rounded-full transition-all flex-shrink-0 btn-purple text-white" title="Pular para próxima">
+                                ⏭️
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Playlist -->
+                    <div class="mt-4 rounded-xl p-4" style="background: rgba(112, 47, 138, 0.3);">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold flex items-center gap-2">
+                                <span>📋</span> Fila de Músicas
+                                <span id="playlistCount" class="px-2 py-0.5 rounded-full text-xs" style="background: var(--kpe-yellow); color: var(--kpe-purple-dark);">0</span>
+                            </h3>
+                            <button onclick="clearPlaylist()" class="text-xs text-red-400 hover:text-red-300 transition-all host-only">
+                                🗑️ Limpar
+                            </button>
+                        </div>
+                        <div id="playlist" class="space-y-2 max-h-48 overflow-y-auto">
+                            <p class="text-purple-200 text-center py-4 text-sm">Adicione músicas à fila!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Results Column -->
+            <div id="resultsColumn" class="lg:col-span-2">
+                <div class="bg-gray-900/60 rounded-3xl p-4 neon-border">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span>🔍</span> Resultados da Busca
+                        <span id="resultsCount" class="ml-auto text-sm font-normal text-purple-200"></span>
+                    </h3>
+                    <div id="searchResults" class="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+                        <div class="text-center py-12">
+                            <span class="text-6xl mb-4 block">🎶</span>
+                            <p class="text-purple-200">Faça uma busca para ver os resultados</p>
+                            <p class="text-purple-300 text-sm mt-2">Dica: Digite o nome da música + artista</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Remote Queue View -->
+                <div id="remoteQueueView" class="bg-gray-900/60 rounded-3xl p-4 neon-border mt-6 hidden">
+                    <div class="queue-header" onclick="toggleRemoteQueue()">
+                        <h3 class="font-bold flex items-center gap-2">
+                            <span>📋</span> Fila Atual
+                            <span id="remotePlaylistCount" class="px-2 py-0.5 rounded-full text-xs" style="background: var(--kpe-yellow); color: var(--kpe-purple-dark);">0</span>
+                        </h3>
+                        <span class="queue-expand-icon text-xl">⬇️</span>
+                    </div>
+                    <div id="remotePlaylist" class="space-y-2 overflow-y-auto">
+                        <p class="text-purple-200 text-center py-4 text-sm">A fila está vazia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-8 text-purple-300 text-sm">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <img src="https://kpe.com.br/wp-content/themes/KpeEngenharia/assets/images/Logo-KPE.svg" 
+                     alt="KPE" class="h-6 opacity-70" style="filter: brightness(0) invert(1);">
+                <span style="color: var(--kpe-yellow);">KPE Engenharia</span>
+            </div>
+            <p>🎤 Divirta-se cantando na confra! 🎉</p>
+        </footer>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <div class="loader mx-auto mb-4"></div>
+            <p class="text-white" id="loadingText">Buscando músicas...</p>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50"></div>
+    
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
+    <script>
+        // App State
+        let appMode = null; // 'host' or 'remote'
+        let currentVideo = null;
+        let playlist = [];
+        let searchResultsData = [];
+        let allSearchResults = []; // Store all results
+        let displayedResults = 15; // Initially show 15 results
+        let player = null;
+        let isPlayerReady = false;
+        
+        // P2P Connection State
+        let peer = null;
+        let connections = []; // Host: array of connections to remotes
+        let hostConnection = null; // Remote: connection to host
+        let roomCode = '';
+        
+        // APIs de fallback para busca
+        const API_ENDPOINTS = [
+            'https://pipedapi.kavin.rocks/search?q=',
+            'https://pipedapi.in.projectsegfau.lt/search?q=',
+            'https://api.piped.yt/search?q=',
+            'https://pipedapi.adminforge.de/search?q='
+        ];
+        
+        // YouTube API callback
+        function onYouTubeIframeAPIReady() {
+            isPlayerReady = true;
+        }
+        
+        // Generate Room Code
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+        
+        // Mode Selection
+        function selectMode(mode) {
+            appMode = mode;
+            document.getElementById('modeSelection').classList.add('hidden');
+            
+            if (mode === 'host') {
+                initHost();
+            } else {
+                document.getElementById('roomEntry').classList.remove('hidden');
+            }
+        }
+        
+        function backToModeSelection() {
+            document.getElementById('roomEntry').classList.add('hidden');
+            document.getElementById('modeSelection').classList.remove('hidden');
+            if (peer) {
+                peer.destroy();
+                peer = null;
+            }
+        }
+        
+        // Initialize Host Mode
+        function initHost() {
+            roomCode = generateRoomCode();
+            showLoading(true, 'Criando sala...');
+            
+            peer = new Peer('kpe-karaoke-' + roomCode, {
+                debug: 1
+            });
+            
+            peer.on('open', (id) => {
+                console.log('Host ready with ID:', id);
+                showLoading(false);
+                
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('hostRoomInfo').classList.remove('hidden');
+                document.getElementById('displayRoomCode').textContent = roomCode;
+                
+                updateConnectionStatus('waiting', 'Aguardando controles...');
+                
+                // Load saved playlist
+                playlist = JSON.parse(localStorage.getItem('kpeKaraokePlaylist')) || [];
+                updatePlaylistUI();
+            });
+            
+            peer.on('connection', (conn) => {
+                console.log('Remote connected:', conn.peer);
+                connections.push(conn);
+                updateConnectedCount();
+                updateConnectionStatus('connected', `${connections.length} controle(s)`);
+                
+                conn.on('data', (data) => {
+                    handleRemoteMessage(conn, data);
+                });
+                
+                conn.on('close', () => {
+                    connections = connections.filter(c => c !== conn);
+                    updateConnectedCount();
+                    if (connections.length === 0) {
+                        updateConnectionStatus('waiting', 'Aguardando controles...');
+                    } else {
+                        updateConnectionStatus('connected', `${connections.length} controle(s)`);
+                    }
+                });
+                
+                // Send current playlist to new remote
+                conn.on('open', () => {
+                    conn.send({ type: 'playlist-sync', playlist: playlist, currentVideo: currentVideo });
+                });
+            });
+            
+            peer.on('error', (err) => {
+                console.error('Peer error:', err);
+                showLoading(false);
+                if (err.type === 'unavailable-id') {
+                    roomCode = generateRoomCode();
+                    peer.destroy();
+                    initHost();
+                } else {
+                    showToast('Erro de conexão. Tente novamente.', 'warning');
+                }
+            });
+        }
+        
+        // Connect to Room (Remote Mode)
+        function connectToRoom() {
+            const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+            if (code.length !== 6) {
+                showToast('Digite o código de 6 caracteres!', 'warning');
+                return;
+            }
+            
+            roomCode = code;
+            showLoading(true, 'Conectando ao palco...');
+            
+            peer = new Peer();
+            
+            peer.on('open', () => {
+                hostConnection = peer.connect('kpe-karaoke-' + roomCode);
+                
+                hostConnection.on('open', () => {
+                    console.log('Connected to host!');
+                    showLoading(false);
+                    
+                    // Add remote mode class to body
+                    document.body.classList.add('remote-mode');
+                    
+                    document.getElementById('roomEntry').classList.add('hidden');
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    document.getElementById('playerColumn').classList.add('hidden');
+                    document.getElementById('resultsColumn').classList.remove('lg:col-span-2');
+                    document.getElementById('resultsColumn').classList.add('lg:col-span-5');
+                    document.getElementById('remoteHeader').classList.remove('hidden');
+                    document.getElementById('remoteQueueView').classList.remove('hidden');
+                    
+                    updateConnectionStatus('connected', 'Conectado ao palco');
+                    showToast('🎉 Conectado! Adicione músicas à fila!', 'success');
+                });
+                
+                hostConnection.on('data', (data) => {
+                    handleHostMessage(data);
+                });
+                
+                hostConnection.on('close', () => {
+                    updateConnectionStatus('disconnected', 'Desconectado');
+                    showToast('Conexão perdida com o palco!', 'warning');
+                });
+            });
+            
+            peer.on('error', (err) => {
+                console.error('Peer error:', err);
+                showLoading(false);
+                if (err.type === 'peer-unavailable') {
+                    showToast('Sala não encontrada! Verifique o código.', 'warning');
+                } else {
+                    showToast('Erro de conexão. Tente novamente.', 'warning');
+                }
+            });
+        }
+        
+        // Handle messages from remote (Host side)
+        function handleRemoteMessage(conn, data) {
+            console.log('Received from remote:', data);
+            
+            if (data.type === 'add-to-queue') {
+                addToQueue(data.videoId, data.title, true);
+            }
+        }
+        
+        // Handle messages from host (Remote side)
+        function handleHostMessage(data) {
+            console.log('Received from host:', data);
+            
+            if (data.type === 'playlist-sync') {
+                playlist = data.playlist;
+                currentVideo = data.currentVideo;
+                updateRemotePlaylistUI();
+            }
+        }
+        
+        // Broadcast playlist to all remotes
+        function broadcastPlaylist() {
+            const message = { type: 'playlist-sync', playlist: playlist, currentVideo: currentVideo };
+            connections.forEach(conn => {
+                if (conn.open) {
+                    conn.send(message);
+                }
+            });
+        }
+        
+        // Update connected count
+        function updateConnectedCount() {
+            document.getElementById('connectedCount').textContent = 
+                `${connections.length} controle(s) conectado(s)`;
+        }
+        
+        // Update connection status display
+        function updateConnectionStatus(status, text) {
+            const el = document.getElementById('connectionStatus');
+            const textEl = document.getElementById('statusText');
+            
+            el.classList.remove('hidden', 'connected', 'disconnected', 'waiting');
+            el.classList.add(status);
+            textEl.textContent = text;
+        }
+        
+        // Quick Search
+        function quickSearch(term) {
+            document.getElementById('searchInput').value = term;
+            searchVideos();
+        }
+        
+        // Search Videos
+        async function searchVideos() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                showToast('Por favor, digite o nome de uma música!', 'warning');
+                return;
+            }
+            
+            const searchQuery = query.toLowerCase().includes('karaoke') ? query : `karaoke ${query}`;
+            
+            showLoading(true, 'Buscando músicas...');
+            
+            let success = false;
+            
+            for (const endpoint of API_ENDPOINTS) {
+                try {
+                    const response = await fetch(`${endpoint}${encodeURIComponent(searchQuery)}&filter=videos`, {
+                        signal: AbortSignal.timeout(8000)
+                    });
+                    
+                    if (!response.ok) continue;
+                    
+                    const data = await response.json();
+                    
+                    if (data.items && data.items.length > 0) {
+                        allSearchResults = data.items.filter(item => item.type === 'stream');
+                        displayedResults = 15;
+                        displayResults(allSearchResults);
+                        success = true;
+                        break;
+                    }
+                } catch (error) {
+                    console.log(`API falhou: ${endpoint}`, error);
+                    continue;
+                }
+            }
+            
+            if (!success) {
+                try {
+                    const invResponse = await fetch(`https://inv.nadeko.net/api/v1/search?q=${encodeURIComponent(searchQuery)}&type=video`, {
+                        signal: AbortSignal.timeout(8000)
+                    });
+                    
+                    if (invResponse.ok) {
+                        const invData = await invResponse.json();
+                        searchResultsData = invData.slice(0, 15);
+                        displayInvidiousResults(searchResultsData);
+                        success = true;
+                    }
+                } catch (e) {
+                    console.log('Invidious também falhou');
+                }
+            }
+            
+            if (!success) {
+                displayError();
+            }
+            
+            showLoading(false);
+        }
+        
+        // Display Results from Piped API
+        function displayResults(videos) {
+            const container = document.getElementById('searchResults');
+            const countEl = document.getElementById('resultsCount');
+            
+            if (!videos || videos.length === 0) {
+                container.innerHTML = '<p class="text-purple-200 text-center py-8">Nenhum resultado encontrado</p>';
+                countEl.textContent = '';
+                return;
+            }
+            
+            countEl.textContent = `${videos.length} resultados`;
+            
+            // Show only the first 'displayedResults' items
+            const videosToShow = videos.slice(0, displayedResults);
+            
+            container.innerHTML = videosToShow.map((video, index) => {
+                const videoId = video.url ? video.url.replace('/watch?v=', '') : '';
+                const thumbnail = video.thumbnail || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+                const duration = formatDuration(video.duration);
+                const title = escapeHtml(video.title);
+                const uploaderName = escapeHtml(video.uploaderName || 'Canal');
+                
+                return createResultCard(videoId, thumbnail, duration, title, uploaderName, video.views);
+            }).join('');
+            
+            // Add "Load More" button if there are more results
+            if (displayedResults < videos.length) {
+                container.innerHTML += `
+                    <div class="text-center py-4">
+                        <button onclick="loadMoreResults()" class="btn-load-more px-6 py-3 rounded-full text-white font-semibold">
+                            ⬇️ Carregar mais ${Math.min(5, videos.length - displayedResults)} músicas
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display Results from Invidious API
+        function displayInvidiousResults(videos) {
+            const container = document.getElementById('searchResults');
+            const countEl = document.getElementById('resultsCount');
+            
+            if (!videos || videos.length === 0) {
+                container.innerHTML = '<p class="text-purple-200 text-center py-8">Nenhum resultado encontrado</p>';
+                countEl.textContent = '';
+                return;
+            }
+            
+            countEl.textContent = `${videos.length} resultados`;
+            
+            container.innerHTML = videos.map((video, index) => {
+                const thumbnail = video.videoThumbnails?.[4]?.url || `https://i.ytimg.com/vi/${video.videoId}/mqdefault.jpg`;
+                const duration = formatDuration(video.lengthSeconds);
+                const title = escapeHtml(video.title);
+                const author = escapeHtml(video.author || 'Canal');
+                
+                return createResultCard(video.videoId, thumbnail, duration, title, author, video.viewCount);
+            }).join('');
+        }
+        
+        // Create Result Card HTML
+        function createResultCard(videoId, thumbnail, duration, title, channel, views) {
+            const isRemote = appMode === 'remote';
+            
+            return `
+                <div class="result-card p-3 rounded-xl bg-gray-800/50">
+                    <div class="flex gap-3">
+                        <div class="relative flex-shrink-0 ${!isRemote ? 'cursor-pointer' : ''}" ${!isRemote ? `onclick="addToQueueAndPlay('${videoId}', '${title.replace(/'/g, "\\'")}')"` : ''}>
+                            <img src="${thumbnail}" 
+                                 alt="Thumbnail" 
+                                 class="w-32 h-20 object-cover rounded-lg bg-gray-700"
+                                 onerror="this.src='https://via.placeholder.com/128x80/702F8A/FFD100?text=🎵'">
+                            ${!isRemote ? `<div class="thumbnail-play"><span class="text-4xl">▶️</span></div>` : ''}
+                            <span class="absolute bottom-1 right-1 bg-black/80 text-xs px-1.5 py-0.5 rounded">${duration}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-sm line-clamp-2 mb-1">${title}</h4>
+                            <p class="text-xs text-purple-300 truncate">${channel}</p>
+                            <p class="text-xs mt-1" style="color: var(--kpe-yellow);">${formatViews(views)} visualizações</p>
+                        </div>
+                        <div class="flex flex-col gap-2 flex-shrink-0">
+                            <button onclick="addToQueue('${videoId}', '${title.replace(/'/g, "\\'")}')" 
+                                    class="btn-add-queue w-10 h-10 rounded-full flex items-center justify-center text-white text-lg"
+                                    title="Adicionar à fila">
+                                ➕
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Display Error
+        function displayError() {
+            const container = document.getElementById('searchResults');
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <span class="text-5xl mb-4 block">😕</span>
+                    <p class="mb-2" style="color: var(--kpe-yellow);">Não foi possível buscar no momento</p>
+                    <p class="text-purple-300 text-sm mb-4">Tente novamente em alguns segundos</p>
+                    <button onclick="searchVideos()" class="px-6 py-2 btn-purple rounded-lg transition-all text-white">
+                        🔄 Tentar Novamente
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Add to queue
+        function addToQueue(videoId, title, fromRemote = false) {
+            if (!videoId) return;
+            
+            // If remote mode, send to host
+            if (appMode === 'remote' && !fromRemote) {
+                if (hostConnection && hostConnection.open) {
+                    hostConnection.send({ type: 'add-to-queue', videoId: videoId, title: title });
+                    showToast('🎵 Música enviada para a fila!', 'success');
+                } else {
+                    showToast('Conexão perdida! Reconecte.', 'warning');
+                }
+                return;
+            }
+            
+            // Host mode
+            if (playlist.some(v => v.videoId === videoId)) {
+                showToast('Esta música já está na fila!', 'warning');
+                return;
+            }
+            
+            playlist.push({ videoId, title });
+            savePlaylist();
+            updatePlaylistUI();
+            broadcastPlaylist();
+            showToast('🎵 Música adicionada à fila!', 'success');
+            
+            if (!currentVideo) {
+                playNextInQueue();
+            }
+        }
+        
+        // Add to queue and play immediately (Host only)
+        function addToQueueAndPlay(videoId, title) {
+            if (!videoId || appMode === 'remote') return;
+            
+            if (!playlist.some(v => v.videoId === videoId)) {
+                playlist.push({ videoId, title });
+                savePlaylist();
+            }
+            
+            playVideo(videoId, title);
+            updatePlaylistUI();
+            broadcastPlaylist();
+        }
+        
+        // Play Video (Host only)
+        function playVideo(videoId, title) {
+            if (!videoId || appMode === 'remote') return;
+            
+            currentVideo = { videoId, title };
+            
+            const container = document.getElementById('playerContainer');
+            container.innerHTML = `<div id="ytPlayer"></div>`;
+            
+            player = new YT.Player('ytPlayer', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'playsinline': 1
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+            
+            document.getElementById('currentTitle').textContent = title;
+            document.getElementById('nowPlaying').classList.remove('hidden');
+            
+            broadcastPlaylist();
+            
+            if (window.innerWidth < 1024) {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // YouTube Player State Change Handler
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                playNextInQueue();
+            }
+        }
+        
+        // YouTube Player Error Handler
+        function onPlayerError(event) {
+            console.error('Erro no player:', event.data);
+            showToast('Erro ao reproduzir. Tentando próxima...', 'warning');
+            setTimeout(() => playNextInQueue(), 2000);
+        }
+        
+        // Play next song in queue
+        function playNextInQueue() {
+            if (currentVideo && playlist.length > 0) {
+                const currentIndex = playlist.findIndex(v => v.videoId === currentVideo.videoId);
+                if (currentIndex !== -1) {
+                    playlist.splice(currentIndex, 1);
+                    savePlaylist();
+                }
+            }
+            
+            if (playlist.length > 0) {
+                const nextVideo = playlist[0];
+                playVideo(nextVideo.videoId, nextVideo.title);
+                showToast('🎵 Próxima música!', 'success');
+            } else {
+                currentVideo = null;
+                const container = document.getElementById('playerContainer');
+                container.innerHTML = `
+                    <div class="video-placeholder">
+                        <img src="https://kpe.com.br/wp-content/themes/KpeEngenharia/assets/images/Logo-KPE.svg" 
+                             alt="KPE" class="h-16 mb-4 opacity-50">
+                        <span class="text-6xl mb-4">🎉</span>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--kpe-yellow);">Fila concluída!</h3>
+                        <p class="text-purple-200">Adicione mais músicas para continuar!</p>
+                    </div>
+                `;
+                document.getElementById('nowPlaying').classList.add('hidden');
+            }
+            
+            updatePlaylistUI();
+            broadcastPlaylist();
+        }
+        
+        // Skip to next song
+        function skipToNext() {
+            if (playlist.length > 0) {
+                playNextInQueue();
+            } else {
+                showToast('Não há mais músicas na fila!', 'warning');
+            }
+        }
+        
+        // Update Playlist UI (Host)
+        function updatePlaylistUI() {
+            const container = document.getElementById('playlist');
+            const count = document.getElementById('playlistCount');
+            
+            count.textContent = playlist.length;
+            
+            if (playlist.length === 0) {
+                container.innerHTML = '<p class="text-purple-200 text-center py-4 text-sm">Adicione músicas à fila!</p>';
+                return;
+            }
+            
+            container.innerHTML = playlist.map((video, index) => {
+                const isPlaying = currentVideo && currentVideo.videoId === video.videoId;
+                const isNext = index === 0 && !isPlaying;
+                
+                return `
+                <div class="playlist-item p-2 rounded-lg bg-gray-700/50 flex items-center gap-2 ${isPlaying ? 'now-playing' : ''}">
+                    <span class="text-xs font-bold px-2 py-1 rounded ${isPlaying ? 'next-indicator' : ''}" style="background: ${isPlaying ? 'var(--kpe-yellow)' : isNext ? '#10b981' : 'var(--kpe-purple)'}; color: ${isPlaying || isNext ? 'var(--kpe-purple-dark)' : 'white'};">
+                        ${isPlaying ? '▶️' : index + 1}
+                    </span>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-xs truncate">${escapeHtml(video.title)}</h4>
+                        ${isPlaying ? '<p class="text-xs" style="color: var(--kpe-yellow);">Tocando agora</p>' : ''}
+                        ${isNext ? '<p class="text-xs text-green-400">Próxima</p>' : ''}
+                    </div>
+                    <button onclick="removeFromPlaylist(${index})" 
+                            class="text-red-400 hover:text-red-300 p-1 transition-all text-sm"
+                            title="Remover da fila">
+                        ✕
+                    </button>
+                </div>
+            `}).join('');
+        }
+        
+        // Update Remote Playlist UI
+        function updateRemotePlaylistUI() {
+            const container = document.getElementById('remotePlaylist');
+            const count = document.getElementById('remotePlaylistCount');
+            
+            count.textContent = playlist.length;
+            
+            if (playlist.length === 0) {
+                container.innerHTML = '<p class="text-purple-200 text-center py-4 text-sm">A fila está vazia</p>';
+                return;
+            }
+            
+            container.innerHTML = playlist.map((video, index) => {
+                const isPlaying = currentVideo && currentVideo.videoId === video.videoId;
+                const isNext = index === 0 && !isPlaying;
+                
+                return `
+                <div class="playlist-item p-2 rounded-lg bg-gray-700/50 flex items-center gap-2 ${isPlaying ? 'now-playing' : ''}">
+                    <span class="text-xs font-bold px-2 py-1 rounded" style="background: ${isPlaying ? 'var(--kpe-yellow)' : isNext ? '#10b981' : 'var(--kpe-purple)'}; color: ${isPlaying || isNext ? 'var(--kpe-purple-dark)' : 'white'};">
+                        ${isPlaying ? '▶️' : index + 1}
+                    </span>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-xs truncate">${escapeHtml(video.title)}</h4>
+                        ${isPlaying ? '<p class="text-xs" style="color: var(--kpe-yellow);">Tocando agora</p>' : ''}
+                        ${isNext ? '<p class="text-xs text-green-400">Próxima</p>' : ''}
+                    </div>
+                </div>
+            `}).join('');
+        }
+        
+        // Remove from Playlist (Host only)
+        function removeFromPlaylist(index) {
+            if (appMode !== 'host') return;
+            
+            const removedVideo = playlist[index];
+            
+            if (currentVideo && removedVideo.videoId === currentVideo.videoId) {
+                playlist.splice(index, 1);
+                savePlaylist();
+                playNextInQueue();
+            } else {
+                playlist.splice(index, 1);
+                savePlaylist();
+                updatePlaylistUI();
+                broadcastPlaylist();
+            }
+        }
+        
+        // Clear Playlist (Host only)
+        function clearPlaylist() {
+            if (appMode !== 'host' || playlist.length === 0) return;
+            if (confirm('Tem certeza que deseja limpar toda a fila?')) {
+                playlist = [];
+                savePlaylist();
+                updatePlaylistUI();
+                broadcastPlaylist();
+                
+                if (player && player.stopVideo) {
+                    player.stopVideo();
+                }
+                currentVideo = null;
+                
+                const container = document.getElementById('playerContainer');
+                container.innerHTML = `
+                    <div class="video-placeholder">
+                        <img src="https://kpe.com.br/wp-content/themes/KpeEngenharia/assets/images/Logo-KPE.svg" 
+                             alt="KPE" class="h-16 mb-4 opacity-50">
+                        <span class="text-6xl mb-4 microphone">🎤</span>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--kpe-yellow);">Pronto para cantar?</h3>
+                        <p class="text-purple-200">Pesquise uma música para começar!</p>
+                    </div>
+                `;
+                document.getElementById('nowPlaying').classList.add('hidden');
+            }
+        }
+        
+        // Save Playlist to LocalStorage
+        function savePlaylist() {
+            localStorage.setItem('kpeKaraokePlaylist', JSON.stringify(playlist));
+        }
+        
+        // Show Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'var(--kpe-purple)' : type === 'warning' ? 'var(--kpe-yellow)' : 'var(--kpe-purple)';
+            const textColor = type === 'warning' ? 'var(--kpe-purple-dark)' : 'white';
+            
+            toast.className = 'px-6 py-3 rounded-lg font-medium mb-2 transition-all transform';
+            toast.style.background = bgColor;
+            toast.style.color = textColor;
+            toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+            toast.textContent = message;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+        
+        // Helper Functions
+        function showLoading(show, text = 'Buscando músicas...') {
+            document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+            document.getElementById('loadingText').textContent = text;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[`\\]/g, '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+        
+        function formatDuration(seconds) {
+            if (!seconds) return '--:--';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function formatViews(views) {
+            if (!views) return '0';
+            if (views >= 1000000) return (views / 1000000).toFixed(1) + 'M';
+            if (views >= 1000) return (views / 1000).toFixed(1) + 'K';
+            return views.toString();
+        }
+        
+        // Toggle Remote Queue visibility
+        function toggleRemoteQueue() {
+            const queueView = document.getElementById('remoteQueueView');
+            queueView.classList.toggle('collapsed');
+            
+            const icon = queueView.querySelector('.queue-expand-icon');
+            if (queueView.classList.contains('collapsed')) {
+                icon.textContent = '⬆️';
+            } else {
+                icon.textContent = '⬇️';
+            }
+        }
+        
+        // Load More Results
+        function loadMoreResults() {
+            displayedResults += 5;
+            displayResults(allSearchResults);
+        }
+        
+        // Generate QR Code for room
+        function generateQRCode(code) {
+            const container = document.getElementById('qrCodeCanvas');
+            const url = `${window.location.origin}${window.location.pathname}?room=${code}`;
+            
+            // Clear previous content
+            container.innerHTML = '';
+            
+            // Try using the QRCode library
+            if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
+                // Library loaded - use canvas method
+                const canvas = document.createElement('canvas');
+                container.appendChild(canvas);
+                
+                QRCode.toCanvas(canvas, url, {
+                    width: 150,
+                    margin: 1,
+                    color: {
+                        dark: '#702F8A',
+                        light: '#FFFFFF'
+                    }
+                }, function(error) {
+                    if (error) {
+                        console.error('Erro ao gerar QR Code:', error);
+                        showQRFallback(container, url, code);
+                    }
+                });
+            } else {
+                // Fallback: use external QR code API
+                showQRFallback(container, url, code);
+            }
+        }
+        
+        // Fallback QR Code using external API
+        function showQRFallback(container, url, code) {
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&bgcolor=FFFFFF&color=702F8A`;
+            container.innerHTML = `<img src="${qrApiUrl}" alt="QR Code para sala ${code}" style="width: 150px; height: 150px; border-radius: 8px;">`;
+        }
+        
+        // Auto-connect via URL parameter
+        function checkAutoConnect() {
+            console.log('🎬 checkAutoConnect INICIADO');
+            console.log('📍 URL atual:', window.location.href);
+            console.log('📍 Search params:', window.location.search);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            
+            console.log('🔍 Parâmetro room detectado:', roomParam);
+            
+            if (roomParam && roomParam.length === 6) {
+                console.log('✅ Código válido! Iniciando auto-conexão...');
+                
+                // Set variables
+                appMode = 'remote';
+                roomCode = roomParam.toUpperCase();
+                
+                console.log('✅ appMode =', appMode);
+                console.log('✅ roomCode =', roomCode);
+                
+                // Function to actually connect
+                const doAutoConnect = () => {
+                    const modeSelection = document.getElementById('modeSelection');
+                    const roomEntry = document.getElementById('roomEntry');
+                    const roomCodeInput = document.getElementById('roomCodeInput');
+                    
+                    if (!modeSelection || !roomEntry || !roomCodeInput) {
+                        console.log('⏳ Elementos ainda não existem, aguardando...');
+                        setTimeout(doAutoConnect, 50);
+                        return;
+                    }
+                    
+                    console.log('✅ Elementos do DOM encontrados!');
+                    console.log('🎯 Escondendo mode selection...');
+                    modeSelection.classList.add('hidden');
+                    
+                    console.log('🎯 Mostrando room entry...');
+                    roomEntry.classList.remove('hidden');
+                    
+                    console.log('🎯 Preenchendo código:', roomCode);
+                    roomCodeInput.value = roomCode;
+                    
+                    console.log('⏱️ Aguardando 1.5s antes de conectar...');
+                    setTimeout(() => {
+                        console.log('🚀 CONECTANDO AGORA!');
+                        connectToRoom();
+                        
+                        // Clear URL after connection initiated
+                        console.log('🧹 Limpando URL...');
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 1500);
+                };
+                
+                // Start the connection process
+                doAutoConnect();
+            } else {
+                console.log('ℹ️ Nenhum código válido na URL. room =', roomParam);
+            }
+        }
+        
+        // Copy Room URL
+        function copyRoomUrl() {
+            const input = document.getElementById('roomUrl');
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile
+            
+            navigator.clipboard.writeText(input.value).then(() => {
+                showToast('🔗 Link copiado! Envie para os celulares.', 'success');
+            }).catch(() => {
+                showToast('Link no campo acima. Copie manualmente.', 'info');
+            });
+        }
+        
+        // Initialize auto-connect
+        console.log('📄 Script carregado! readyState =', document.readyState);
+        
+        // Run immediately if DOM is ready, otherwise wait for it
+        if (document.readyState === 'loading') {
+            console.log('⏳ Aguardando DOMContentLoaded...');
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('✅ DOMContentLoaded disparado!');
+                checkAutoConnect();
+            });
+        } else {
+            console.log('✅ DOM já pronto, executando imediatamente...');
+            checkAutoConnect();
+        }
+    </script>
+</body>
+</html>
